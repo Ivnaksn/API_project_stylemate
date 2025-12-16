@@ -14,5 +14,7 @@ $routes->group('api', function($routes) {
     $routes->get('profile', 'AuthController::profile');
      $routes->post('events', 'EventController::create');
 
-
+    $routes->post('analyze-clothing', 'AIWardrobeController::analyzeClothing');
+    $routes->post('generate-outfits', 'AIWardrobeController::generateOutfits');
+    $routes->get('health', 'AIWardrobeController::health');
 });
