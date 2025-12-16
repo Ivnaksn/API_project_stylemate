@@ -133,7 +133,9 @@ class AIWardrobeController extends ResourceController
                 'error' => $e->getMessage(),
             ], 500);
         }
+        
     }
+    
 
     public function health()
     {
