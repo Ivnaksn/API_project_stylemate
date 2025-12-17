@@ -27,7 +27,7 @@ class GeminiVisionService
 
     public function analyzeClothingImage($base64Image)
     {
-        // Bersihkan header base64 jika ada
+        
         if (strpos($base64Image, ',') !== false) {
             $base64Image = explode(',', $base64Image)[1];
         }
@@ -91,7 +91,6 @@ class GeminiVisionService
     {
         if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
             $rawText = $data['candidates'][0]['content']['parts'][0]['text'];
-            // Bersihkan markdown formatting ```json ... ```
             $rawText = str_replace(['```json', '```'], '', $rawText);
             return json_decode(trim($rawText), true) ?? $rawText;
         }
