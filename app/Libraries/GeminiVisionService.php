@@ -13,7 +13,9 @@ class GeminiVisionService
 
     public function __construct()
     {
+        
         $this->apiKey = getenv('GEMINI_API_KEY');
+        
         
         if (!$this->apiKey) {
             log_message('error', 'Gemini API Key is missing in .env file');
@@ -27,7 +29,6 @@ class GeminiVisionService
 
     public function analyzeClothingImage($base64Image)
     {
-        
         if (strpos($base64Image, ',') !== false) {
             $base64Image = explode(',', $base64Image)[1];
         }
