@@ -22,7 +22,7 @@ class AIWardrobeController extends ResourceController
         $this->geminiService = new GeminiVisionService();
         $this->wardrobeModel = new WardrobeModel();
         
-        
+       
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type, Authorization');
@@ -32,20 +32,15 @@ class AIWardrobeController extends ResourceController
         }
     }
 
-   
     public function analyzeClothing()
     {
         try {
             $imageBase64 = $this->request->getPost('image');
             
             if (empty($imageBase64)) {
-                return $this->fail([
-                    'success' => false,
-                    'message' => 'Image is required',
-                ], 400);
+                return $this->fail(['success' => false, 'message' => 'Image is required'], 400);
             }
 
-            
             $analysis = $this->geminiService->analyzeClothingImage($imageBase64);
 
             return $this->respond([
@@ -54,17 +49,10 @@ class AIWardrobeController extends ResourceController
                 'analysis' => $analysis,
             ]);
         } catch (\Exception $e) {
-            log_message('error', 'Analyze Error: ' . $e->getMessage());
-            
-            return $this->fail([
-                'success' => false,
-                'message' => 'Failed to analyze image',
-                'error' => $e->getMessage(),
-            ], 500);
+            return $this->fail(['success' => false, 'message' => 'Failed to analyze image', 'error' => $e->getMessage()], 500);
         }
     }
 
-    
     public function generateOutfits()
     {
         try {
@@ -73,14 +61,9 @@ class AIWardrobeController extends ResourceController
             $userId = $requestData['userId'] ?? null;
             $occasion = $requestData['occasion'] ?? 'daily';
             $weather = $requestData['weather'] ?? 'warm';
-            $temperature = $requestData['temperature'] ?? 25;
-            $formality = $requestData['formality'] ?? 'casual';
 
             if (empty($userId)) {
-                return $this->fail([
-                    'success' => false,
-                    'message' => 'User ID is required',
-                ], 400);
+                return $this->fail(['success' => false, 'message' => 'User ID is required'], 400);
             }
 
             $wardrobeItems = $this->wardrobeModel->getUserWardrobe($userId);
@@ -88,29 +71,25 @@ class AIWardrobeController extends ResourceController
             if (empty($wardrobeItems)) {
                 return $this->respond([
                     'success' => false,
-                    'message' => 'Lemari kamu kosong! Upload foto baju dulu.', 
+                    'message' => 'Lemari kamu kosong! Upload foto baju dulu ya.',
                     'recommendations' => [],
                 ], 404); 
             }
 
-            
             $formattedItems = array_map(function($item) {
                 return [
-                    'id' => $item['item_id'],
-                    'name' => $item['name'],
-                    'category' => $item['category'],
-                    'colors' => json_decode($item['colors'], true),
-                    'style' => $item['style'],
-                    'pattern' => $item['pattern'],
-                    'imageUrl' => $item['image_url'],
+                    'id'          => $item['id'],
+                    'name'        => $item['name'],
+                    'categoryId'  => $item['category_id'], 
+                    'color'       => $item['color'],      
+                    'style'       => $item['style'],
+                    'imageUrl'    => $item['image_url'],
                 ];
             }, $wardrobeItems);
 
             $filters = [
-                'occasion' => $occasion,
-                'weather' => $weather,
-                'temperature' => $temperature,
-                'formality' => $formality,
+                'occasion'    => $occasion,
+                'weather'     => $weather,
             ];
 
             $recommendations = $this->geminiService->generateOutfitRecommendations(
@@ -125,18 +104,10 @@ class AIWardrobeController extends ResourceController
                 'recommendations' => $recommendations,
             ]);
         } catch (\Exception $e) {
-            log_message('error', 'Generate Error: ' . $e->getMessage());
-            
-            return $this->fail([
-                'success' => false,
-                'message' => 'Failed to generate recommendations',
-                'error' => $e->getMessage(),
-            ], 500);
+            return $this->fail(['success' => false, 'message' => 'gagal memberikan rekomendasi', 'error' => $e->getMessage()], 500);
         }
         
     }
-    
-
     public function health()
     {
         return $this->respond([
