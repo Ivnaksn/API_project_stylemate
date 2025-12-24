@@ -8,13 +8,23 @@ use App\Models\WardrobeModel;
 
 class WardrobeController extends ResourceController
 {
-    use ResponseTrait;
-    private function getUserId()
-    {
-        $rawUser = $this->request->user ?? null;
-        $userData = (array) $rawUser; 
-        return $userData['user_id'] ?? $userData['id'] ?? $userData['uid'] ?? null;
+  use ResponseTrait;
+  private function getUserId()
+{
+    if (isset($this->request->user)) {
+        $userData = (array) $this->request->user;
+        return $userData['user_id'] ?? $userData['id'] ?? null;
     }
+
+    $firebaseUid = $this->request->getHeaderLine('Authorization');
+    if ($firebaseUid) {
+        $userModel = new \App\Models\UserModel();
+        $user = $userModel->where('firebase_uid', $firebaseUid)->first();
+        return $user['user_id'] ?? null;
+    }
+
+    return null;
+}
     public function index()
     {
         $model = new WardrobeModel();
@@ -29,7 +39,7 @@ class WardrobeController extends ResourceController
         return $this->respond($data);
     }
 
-     public function create()
+    public function create()
     {
         $model = new WardrobeModel();
         $userId = $this->getUserId();
@@ -94,9 +104,7 @@ class WardrobeController extends ResourceController
     {
         $model = new WardrobeModel();
         $userId = $this->getUserId();
-        
         $json = $this->request->getJSON();
-        
         $exist = $model->where('user_id', $userId)->find($id);
         if (!$exist) {
             return $this->failNotFound('Item tidak ditemukan atau bukan milik Anda.');
