@@ -23,4 +23,15 @@ $routes->group('api', function($routes) {
     $routes->get('wardrobe/(:num)', 'WardrobeController::show/$1');
     $routes->put('wardrobe/(:num)', 'WardrobeController::update  /$1');
     $routes->delete('wardrobe/(:num)', 'WardrobeController::delete/$1');
+
+    $routes->get('/boards', 'BoardController::index');
+    $routes->post('/boards', 'BoardController::create');
+    $routes->delete('/boards/(:num)', 'BoardController::delete/$1');
+
+    $routes->get('/boards/semua/outfits', 'BoardController::semuaOutfits');
+    $routes->get('/boards/(:num)/outfits', 'BoardController::boardOutfits/$1');
+    $routes->post('/boards/(:num)/outfits', 'BoardController::addOutfitToBoard/$1');
+
+    $routes->post('/outfits', 'OutfitController::store');
+
 });
