@@ -24,6 +24,13 @@ $routes->group('api', function($routes) {
     $routes->put('wardrobe/(:num)', 'WardrobeController::update  /$1');
     $routes->delete('wardrobe/(:num)', 'WardrobeController::delete/$1');
 
+
+       $routes->get('events', 'EventController::index');
+        $routes->post('events', 'EventController::create');
+        $routes->get('events/(:num)', 'EventController::show/$1');
+        $routes->put('events/(:num)', 'EventController::update/$1');
+        $routes->delete('events/(:num)', 'EventController::delete/$1');
+
     $routes->get('/boards', 'BoardController::index');
     $routes->post('/boards', 'BoardController::create');
     $routes->delete('/boards/(:num)', 'BoardController::delete/$1');
