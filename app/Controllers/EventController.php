@@ -12,18 +12,14 @@ class EventController extends ResourceController
     protected $modelName = 'App\Models\EventModel';
     protected $format    = 'json';
 
-    
     private function getInternalUserId()
     {
-        
         if (isset($this->request->user)) {
-           
             return $this->request->user->user_id; 
         }
         return null;
     }
 
- 
     public function create()
     {
         $internalUserId = $this->getInternalUserId();
@@ -45,12 +41,11 @@ class EventController extends ResourceController
         $location  = $this->request->getVar('location');
         $dateEvent = $this->request->getVar('date');
 
-       
         $weatherAPI = new WeatherAPI();
         $weather    = $weatherAPI->getWeather($location, $dateEvent);
 
         $data = [
-            'user_id'           => $internalUserId,
+            'user_id'           => $internalUserId, 
             'name'              => $this->request->getVar('name'),
             'description'       => $this->request->getVar('description'),
             'date'              => $dateEvent,
@@ -59,7 +54,7 @@ class EventController extends ResourceController
             'weather_condition' => $weather['condition'] ?? null
         ];
 
-        
+       
         $eventId = $this->model->insert($data);
 
         if ($eventId) {
@@ -73,7 +68,6 @@ class EventController extends ResourceController
         return $this->fail('Gagal menyimpan event ke database');
     }
 
-    
     public function index()
     {
         $internalUserId = $this->getInternalUserId();
@@ -106,6 +100,7 @@ class EventController extends ResourceController
         if (!$event) {
             return $this->failNotFound('Event tidak ditemukan');
         }
+
         if ($event['user_id'] != $internalUserId) {
             return $this->failForbidden('Anda tidak diizinkan menghapus event ini.');
         }
