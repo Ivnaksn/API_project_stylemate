@@ -30,7 +30,6 @@ class ProfileController extends BaseController
             'user_id' => (string) $user['user_id'],
             'name' => $user['name'],
             'email' => $user['email'],
-            // ⬇️ FOTO DITAMPILKAN (URL)
             'photo' => $user['photo']
                 ? base_url('uploads/profiles/' . $user['photo'])
                 : null,
